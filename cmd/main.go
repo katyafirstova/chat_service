@@ -1,11 +1,50 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"net"
 
-	"github.com/fatih/color"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"google.golang.org/protobuf/types/known/emptypb"
+
+	"github.com/katyafirstova/chat_service/pkg/chat_v1"
 )
 
+type server struct {
+	chat_v1.UnimplementedChatV1Server
+}
+
+func (s *server) Create(ctx context.Context, req *chat_v1.CreateRequest) (*chat_v1.CreateResponse, error) {
+	fmt.Printf("#%v", req)
+	return &chat_v1.CreateResponse{Id: 11}, nil
+}
+
+func (s *server) Delete(ctx context.Context, req *chat_v1.DeleteRequest) (*emptypb.Empty, error) {
+	fmt.Printf("#%v", req)
+	return nil, nil
+}
+
+func (s *server) Send(ctx context.Context, req *chat_v1.SendRequest) (*emptypb.Empty, error) {
+	fmt.Printf("#%v", req)
+	return nil, nil
+}
+
 func main() {
-	fmt.Println(color.GreenString("Hello, world!"))
+	lis, err := net.Listen("tcp", ":50001")
+	if err != nil {
+		log.Fatalf("Failed to create listener: %s", err.Error())
+	}
+
+	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
+	chat_v1.RegisterChatV1Server(grpcServer, &server{})
+
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		log.Fatalf("Failed to serve: %s", err.Error())
+	}
+
 }
