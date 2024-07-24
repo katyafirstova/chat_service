@@ -33,7 +33,8 @@ func (s *server) Send(_ context.Context, req *chat_v1.SendRequest) (*emptypb.Emp
 }
 
 func main() {
-	lis, err := net.Listen("tcp", "127.0.0.1:50001")
+	address := "127.0.0.1:50001"
+	lis, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Fatalf("Failed to create listener: %s", err.Error())
 	}
