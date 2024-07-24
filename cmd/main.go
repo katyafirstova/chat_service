@@ -24,12 +24,12 @@ func (s *server) Create(_ context.Context, req *chat_v1.CreateRequest) (*chat_v1
 
 func (s *server) Delete(_ context.Context, req *chat_v1.DeleteRequest) (*emptypb.Empty, error) {
 	fmt.Printf("#%v", req)
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *server) Send(_ context.Context, req *chat_v1.SendRequest) (*emptypb.Empty, error) {
 	fmt.Printf("#%v", req)
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }
 
 func main() {
