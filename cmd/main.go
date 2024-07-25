@@ -13,27 +13,29 @@ import (
 	"github.com/katyafirstova/chat_service/pkg/chat_v1"
 )
 
+const address = "127.0.0.1:50001"
+
 type server struct {
 	chat_v1.UnimplementedChatV1Server
 }
 
-func (s *server) Create(ctx context.Context, req *chat_v1.CreateRequest) (*chat_v1.CreateResponse, error) {
+func (s *server) Create(_ context.Context, req *chat_v1.CreateRequest) (*chat_v1.CreateResponse, error) {
 	fmt.Printf("#%v", req)
 	return &chat_v1.CreateResponse{Id: 11}, nil
 }
 
-func (s *server) Delete(ctx context.Context, req *chat_v1.DeleteRequest) (*emptypb.Empty, error) {
+func (s *server) Delete(_ context.Context, req *chat_v1.DeleteRequest) (*emptypb.Empty, error) {
 	fmt.Printf("#%v", req)
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }
 
-func (s *server) Send(ctx context.Context, req *chat_v1.SendRequest) (*emptypb.Empty, error) {
+func (s *server) Send(_ context.Context, req *chat_v1.SendRequest) (*emptypb.Empty, error) {
 	fmt.Printf("#%v", req)
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }
 
 func main() {
-	lis, err := net.Listen("tcp", ":50001")
+	lis, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Fatalf("Failed to create listener: %s", err.Error())
 	}
@@ -46,5 +48,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to serve: %s", err.Error())
 	}
-
 }

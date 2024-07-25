@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package api;
+package chat_v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -31,7 +31,3 @@ message SendRequest {
     string text = 2;
     google.protobuf.Timestamp timestamp = 3;
 }
-
-
-
-
