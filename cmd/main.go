@@ -13,6 +13,8 @@ import (
 	"github.com/katyafirstova/chat_service/pkg/chat_v1"
 )
 
+const address = "127.0.0.1:50001"
+
 type server struct {
 	chat_v1.UnimplementedChatV1Server
 }
@@ -33,7 +35,6 @@ func (s *server) Send(_ context.Context, req *chat_v1.SendRequest) (*emptypb.Emp
 }
 
 func main() {
-	address := "127.0.0.1:50001"
 	lis, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Fatalf("Failed to create listener: %s", err.Error())
