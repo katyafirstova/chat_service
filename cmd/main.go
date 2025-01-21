@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	`time`
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -22,7 +23,7 @@ const (
 	address                     = "127.0.0.1:50002"
 	chatTable                   = "chats"
 	messageTable                = "messages"
-	chatTableColumnUUID         = "uuid"
+	chatTableColumnUUID         = "chat_uuid"
 	chatTableColumnUserUUID     = "user_uuid"
 	chatTableColumnTimestamp    = "timestamp"
 	messageTableColumnUUID      = "uuid"
@@ -39,34 +40,49 @@ type server struct {
 }
 
 func (s *server) Create(ctx context.Context, req *chat_v1.CreateRequest) (*chat_v1.CreateResponse, error) {
+	chatUUID := uuid.NewString()
 
 	builderInsert := sq.Insert(chatTable).
 		PlaceholderFormat(sq.Dollar).
-		Columns(chatTableColumnUUID, chatTableColumnUserUUID, chatTableColumnTimestamp).
-		Values(uuid.NewString(), req).
-		Suffix(fmt.Sprintf("RETURNING %s", chatTableColumnUUID))
+		Columns(chatTableColumnUUID, chatTableColumnUserUUID)
+
+	for _, userUUID := range req.UserUuids {
+		builderInsert = builderInsert.Values(chatUUID, userUUID)
+	}
 
 	query, args, err := builderInsert.ToSql()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to build SQL query: %w", err)
 	}
 
-	var newUUID string
-	err = pool.QueryRow(ctx, query, args...).Scan(&newUUID)
+	_, err = pool.Exec(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
 
-	return &chat_v1.CreateResponse{Uuid: newUUID}, nil
-
+	return &chat_v1.CreateResponse{Uuid: chatUUID}, nil
 }
 
 func (s *server) Delete(ctx context.Context, req *chat_v1.DeleteRequest) (*emptypb.Empty, error) {
-	builderDelete := sq.Delete(chatTable).
+	builderDelete := sq.Delete(messageTable).
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{messageTableColumnChatUUID: req.Uuid})
+
+	query, args, err := builderDelete.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = pool.Exec(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	builderDelete = sq.Delete(chatTable).
 		PlaceholderFormat(sq.Dollar).
 		Where(sq.Eq{chatTableColumnUUID: req.Uuid})
 
-	query, args, err := builderDelete.ToSql()
+	query, args, err = builderDelete.ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +100,7 @@ func (s *server) Send(ctx context.Context, req *chat_v1.SendRequest) (*emptypb.E
 		PlaceholderFormat(sq.Dollar).
 		Columns(messageTableColumnUUID, messageTableColumnUserUUID, messageTableColumnChatUUID, messageTableColumnText,
 			messageTableColumnCreatedAt).
-		Values(uuid.NewString(), req.SenderUuid, req.ChatUuid, req.Text)
+		Values(uuid.NewString(), req.SenderUuid, req.ChatUuid, req.Text, time.Now())
 
 	query, args, err := builderInsert.ToSql()
 	if err != nil {
