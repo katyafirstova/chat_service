@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -20,17 +19,15 @@ import (
 const (
 	dbDSN = "host=localhost port=54322 dbname=chat_db user=chat_user password=chat_password sslmode=disable"
 
-	address                     = "127.0.0.1:50002"
-	chatTable                   = "chats"
-	messageTable                = "messages"
-	chatTableColumnUUID         = "chat_uuid"
-	chatTableColumnUserUUID     = "user_uuid"
-	chatTableColumnTimestamp    = "timestamp"
-	messageTableColumnUUID      = "uuid"
-	messageTableColumnUserUUID  = "user_uuid"
-	messageTableColumnChatUUID  = "chat_uuid"
-	messageTableColumnText      = "text"
-	messageTableColumnCreatedAt = "created_at"
+	address                    = "127.0.0.1:50002"
+	chatTable                  = "chats"
+	messageTable               = "messages"
+	chatTableColumnUUID        = "chat_uuid"
+	chatTableColumnUserUUID    = "user_uuid"
+	messageTableColumnUUID     = "uuid"
+	messageTableColumnUserUUID = "user_uuid"
+	messageTableColumnChatUUID = "chat_uuid"
+	messageTableColumnText     = "text"
 )
 
 var pool *pgxpool.Pool
@@ -98,9 +95,8 @@ func (s *server) Delete(ctx context.Context, req *chat_v1.DeleteRequest) (*empty
 func (s *server) Send(ctx context.Context, req *chat_v1.SendRequest) (*emptypb.Empty, error) {
 	builderInsert := sq.Insert(messageTable).
 		PlaceholderFormat(sq.Dollar).
-		Columns(messageTableColumnUUID, messageTableColumnUserUUID, messageTableColumnChatUUID, messageTableColumnText,
-			messageTableColumnCreatedAt).
-		Values(uuid.NewString(), req.SenderUuid, req.ChatUuid, req.Text, time.Now())
+		Columns(messageTableColumnUUID, messageTableColumnUserUUID, messageTableColumnChatUUID, messageTableColumnText).
+		Values(uuid.NewString(), req.SenderUuid, req.ChatUuid, req.Text)
 
 	query, args, err := builderInsert.ToSql()
 	if err != nil {
