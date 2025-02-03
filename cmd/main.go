@@ -3,21 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-	"net"
+
+	"github.com/pkg/errors"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/katyafirstova/chat_service/pkg/chat_v1"
 )
 
 const (
-	dbDSN = "host=localhost port=54322 dbname=chat_db user=chat_user password=chat_password sslmode=disable"
+	dbDSN = "host=localhost port=54322 dbname=chat_db chat=chat_user password=chat_password sslmode=disable"
 
 	address                    = "127.0.0.1:50002"
 	chatTable                  = "chats"
@@ -112,26 +110,34 @@ func (s *server) Send(ctx context.Context, req *chat_v1.SendRequest) (*emptypb.E
 }
 
 func main() {
-	var err error
-	ctx := context.Background()
+	baseErr := errors.Wrap().New("err")
 
-	pool, err = pgxpool.Connect(ctx, dbDSN)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %s", err.Error())
-	}
-	defer pool.Close()
+	err := fmt.Errorf("hrllp %w", baseErr)
+	fmt.Println(err)
 
-	lis, err := net.Listen("tcp", address)
-	if err != nil {
-		log.Fatalf("Failed to create listener: %s", err.Error())
-	}
+	fmt.Println(errors.Is(err, baseErr))
+	fmt.Println(errors.Unwrap(err).Error())
 
-	grpcServer := grpc.NewServer()
-	reflection.Register(grpcServer)
-	chat_v1.RegisterChatV1Server(grpcServer, &server{})
-
-	err = grpcServer.Serve(lis)
-	if err != nil {
-		log.Fatalf("Failed to serve: %s", err.Error())
-	}
+	//var err error
+	//ctx := context.Background()
+	//
+	//pool, err = pgxpool.Connect(ctx, dbDSN)
+	//if err != nil {
+	//	log.Fatalf("Failed to connect to database: %s", err.Error())
+	//}
+	//defer pool.Close()
+	//
+	//lis, err := net.Listen("tcp", address)
+	//if err != nil {
+	//	log.Fatalf("Failed to create listener: %s", err.Error())
+	//}
+	//
+	//grpcServer := grpc.NewServer()
+	//reflection.Register(grpcServer)
+	//chat_v1.RegisterChatV1Server(grpcServer, &server{})
+	//
+	//err = grpcServer.Serve(lis)
+	//if err != nil {
+	//	log.Fatalf("Failed to serve: %s", err.Error())
+	//}
 }
