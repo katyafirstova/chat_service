@@ -49,4 +49,5 @@ issues:
     - G104
     - exported func .* returns unexported type .*, which can be annoying to use
     - should have a package comment
+    - should have comment or be unexported
     - don't use an underscore in package name
