@@ -62,7 +62,7 @@ func (r *repo) Send(ctx context.Context, req model.SendMessage) error {
 	builderInsert := sq.Insert(messageTable).
 		PlaceholderFormat(sq.Dollar).
 		Columns(messageTableColumnUUID, messageTableColumnUserUUID, messageTableColumnChatUUID, messageTableColumnText).
-		Values(uuid.NewString(), req.UserUuid, req.ChatUuid, req.Text)
+		Values(uuid.NewString(), req.UserUUID, req.ChatUUID, req.Text)
 
 	query, args, err := builderInsert.ToSql()
 	if err != nil {

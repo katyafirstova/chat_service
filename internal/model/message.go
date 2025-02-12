@@ -1,7 +1,7 @@
 package model
 
 type SendMessage struct {
-	UserUuid string
-	ChatUuid string
+	UserUUID string
+	ChatUUID string
 	Text     string
 }

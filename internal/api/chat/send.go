@@ -10,7 +10,7 @@ import (
 )
 
 func (i *Implementation) Send(ctx context.Context, req *chat_v1.SendRequest) (*emptypb.Empty, error) {
-	err := i.chatService.Send(ctx, converter.SendMessageToServiceFromApi(req))
+	err := i.chatService.Send(ctx, converter.SendMessageToServiceFromAPI(req))
 	if err != nil {
 		return &emptypb.Empty{}, err
 	}

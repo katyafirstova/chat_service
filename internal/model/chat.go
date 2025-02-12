@@ -1,6 +1,6 @@
 package model
 
 type CreateChat struct {
-	Uuid      string
+	UUID      string
 	UserUuids []string
 }
