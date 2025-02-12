@@ -30,8 +30,6 @@ type repo struct {
 	db *pgxpool.Pool
 }
 
-var pool *pgxpool.Pool
-
 func NewRepository(db *pgxpool.Pool) *repo {
 	return &repo{db: db}
 }
@@ -52,7 +50,7 @@ func (r *repo) Create(ctx context.Context, req model.CreateChat) (string, error)
 		return "", fmt.Errorf("failed to build SQL query: %w", err)
 	}
 
-	_, err = pool.Exec(ctx, query, args...)
+	_, err = r.db.Exec(ctx, query, args...)
 	if err != nil {
 		return "", err
 	}
@@ -71,7 +69,7 @@ func (r *repo) Send(ctx context.Context, req model.SendMessage) error {
 		return err
 	}
 
-	_, err = pool.Exec(ctx, query, args...)
+	_, err = r.db.Exec(ctx, query, args...)
 	if err != nil {
 		return err
 	}
@@ -89,7 +87,7 @@ func (r *repo) Delete(ctx context.Context, uuid string) error {
 		return err
 	}
 
-	_, err = pool.Exec(ctx, query, args...)
+	_, err = r.db.Exec(ctx, query, args...)
 	if err != nil {
 		return err
 	}
@@ -103,7 +101,7 @@ func (r *repo) Delete(ctx context.Context, uuid string) error {
 		return err
 	}
 
-	_, err = pool.Exec(ctx, query, args...)
+	_, err = r.db.Exec(ctx, query, args...)
 	if err != nil {
 		return err
 	}

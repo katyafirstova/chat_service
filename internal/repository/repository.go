@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/katyafirstova/chat_service/internal/repository/chat/model"
+	"github.com/katyafirstova/chat_service/internal/model"
 )
 
 type ChatRepository interface {
